@@ -1,86 +1,140 @@
 # AI Evidence Gate
 
-**Evidence-first evaluation and release control plane for AI systems.**
+### Ověřte AI změnu dřív, než ji pustíte do provozu.
 
-AI Evidence Gate is an independent reference implementation for deciding whether a model or agent workflow is safe and useful enough for a specific business process. Instead of asking “which model is best?”, it records evidence and produces explicit **PASS / REVIEW / BLOCK** benchmark outcomes and **PROMOTE / HOLD / BLOCK / UNKNOWN** release decisions.
+**Evidence-first evaluation & release control plane for AI systems.**
 
-> Independent portfolio project. No affiliation with Coalbrain or any model provider. Bundled models, datasets and default benchmark results are synthetic/demo evidence.
+AI Evidence Gate porovnává současnou a novou AI variantu na stejných případech, změří kvalitu, bezpečnost, cenu a rychlost a vrátí srozumitelný verdikt před nasazením.
 
-## Product surface
+> **Princip:** novější, rychlejší ani levnější model není automaticky lepší pro konkrétní firemní proces. Kritická chyba se nesmí schovat za dobrý průměr.
 
-- deterministic, reproducible benchmark runs
-- versioned dataset and model registries
-- PostgreSQL-backed benchmark, regression, policy and audit persistence
-- security hard gates and agent trace evidence
-- editable release policies
-- failed-case → regression workflow
-- enterprise workspaces with cloud / on-prem / hybrid posture
-- incumbent-vs-challenger release decisions
-- model radar and executive evidence views
-- explicit provider readiness boundary
-- React control plane + FastAPI API + Docker Compose
-- Playwright browser E2E and GitHub Actions CI
+![AI Evidence Gate – přehled](docs/assets/overview.png)
 
-## Trust model
+## Proč to existuje
 
-`UNKNOWN ≠ PASS.` Security hard-gate failures cannot be averaged away by a high business score. A cheaper or faster challenger is promotion-eligible only when the recorded policy still passes.
+Při změně modelu, promptu nebo agentního workflow potřebujeme odpovědět na jednoduchou otázku:
 
-The current public MVP keeps live external-provider execution disabled by default. Provider credentials are never bundled in the repository.
+**Je nová varianta pro tento konkrétní proces prokazatelně lepší a dost bezpečná?**
 
-## Architecture
+AI Evidence Gate místo univerzálního leaderboardu používá use-case evidence a explicitní pravidla.
+
+```text
+současná varianta ─┐
+                   ├─ stejné testovací případy → kvalita / bezpečnost / cena / rychlost
+nová varianta ─────┘                                      ↓
+                                            PROŠLO / KONTROLA / BLOCK
+```
+## Jak vypadá běžný uživatelský tok
+
+1. **Vyberete proces** – faktury, schůzky, směny nebo objednávky.
+2. **Porovnáte současnou a novou variantu** – obě dostanou stejná data a stejná pravidla.
+3. **Dostanete verdikt** – prošlo, potřebuje člověka, nebo nenasazovat.
+4. **Vytvoříte rozhodnutí o nasazení** – výsledek se uloží jako dohledatelný auditní záznam.
+
+![AI Evidence Gate – nová kontrola](docs/assets/new-check.png)
+
+### Co produkt hlídá
+
+- kritickou přesnost a správnost důležitých polí
+- dodržení očekávaného formátu / schématu
+- halucinace a vymyšlené údaje
+- bezpečnostní selhání a nebezpečné automatické akce
+- cenu za úlohu a změnu nákladů
+- latenci a provozní dopad
+- regresní chyby, které se mají příště testovat znovu
+
+**`UNKNOWN ≠ PASS`** a hard-gate security failure nemůže zachránit levnější cena ani hezké průměrné skóre.
+## Architektura
 
 ```text
 Model / agent candidate
         ↓
 Versioned dataset + replay
         ↓
-Deterministic / semantic / security graders
+Graders + security checks
         ↓
-Quality + latency + cost + safety evidence
+Quality / latency / cost / safety evidence
         ↓
 Release policy
         ↓
 PASS / REVIEW / BLOCK
-        ↓
-Enterprise release gate
         ↓
 PROMOTE / HOLD / BLOCK / UNKNOWN
         ↓
 Persistent audit + regression feedback
 ```
 
+### Stack
+
+- **Frontend:** React + TypeScript + Vite
+- **API:** FastAPI
+- **Persistence:** PostgreSQL, SQLite fallback pro lokální scénáře
+- **Runtime:** Docker Compose
+- **Browser E2E:** Playwright
+- **CI:** GitHub Actions workflow je součástí repozitáře
+
+UI je záměrně **simple by default, evidence underneath**: běžný uživatel vidí hlavní proces, technické registry a auditní nástroje jsou schované v režimu „Pokročilé“.
+## Ověřený stav MVP
+
+Aktuální verze byla lokálně ověřena proti běžícímu Docker stacku:
+
+- frontend production build: **PASS**
+- API readiness: **PASS**
+- český základní user journey: **4/4 Playwright E2E PASS**
+- enterprise PROMOTE / BLOCK flow a persistence byly ověřeny v předchozím release gate
+- veřejné demo používá syntetická data a externí provider volání je ve výchozím stavu vypnuté
+
+> Nejde o produkční bezpečnostní certifikaci. Jde o funkční Enterprise MVP / reference implementation s explicitně popsanými trust boundaries.
+
 ## Quick start
 
 ```bash
+git clone https://github.com/eimyroot/AI-Evidence-Gate.git
+cd AI-Evidence-Gate
 docker compose up --build -d
 curl -fsS http://localhost:5173/ready
-open http://localhost:5173
 ```
 
-Backend API: `http://localhost:8000/docs`
+Aplikace: `http://localhost:5173`
 
-## Verification
+OpenAPI: `http://localhost:8000/docs`
+
+### Browser E2E
 
 ```bash
-# backend
-docker compose run --rm -e PYTHONPATH=/app -v "$PWD/backend:/app" api pytest -q
-
-# production frontend build
-docker compose build web
-
-# browser E2E
 cd frontend
 npm install
 npx playwright install chromium
 npm run e2e
 ```
+## Use-case fit
 
-## Coalbrain reference fit
+Reference implementation obsahuje scénáře pro:
 
-The repository includes an independent use-case mapping for document processing, meeting intelligence, workforce scheduling and ERP/order-agent workflows. See `docs/COALBRAIN_FIT.md`. It is a portfolio fit assessment, not a claim that Coalbrain currently uses this product.
+- zpracování faktur a dokladů
+- meeting intelligence
+- plánování směn
+- order / ERP agent workflow
+
+Repo obsahuje také samostatné nezávislé mapování na veřejně popsané use-cases Coalbrainu v [`docs/COALBRAIN_FIT.md`](docs/COALBRAIN_FIT.md). Nejde o tvrzení, že Coalbrain tento produkt používá nebo s projektem spolupracuje.
 
 ## Enterprise boundary
 
-This is an Enterprise MVP/reference implementation, not a claim of production certification. Before a regulated or multi-tenant deployment, the hardening backlog includes enforceable OIDC/RBAC, tenant isolation, secrets/KMS integration, client-data ingestion/redaction/retention controls, telemetry/alerting, backup drills, signed attestations, HA/SLOs and real ERP/provider adapters.
+Hotové jsou evidence, release decisions, auditní stopa, workspaces, policies, regression corpus, provider boundary a Docker/browser verification.
 
-See `docs/ENTERPRISE_MVP.md` for the explicit product boundary.
+Před skutečným regulovaným nebo multi-tenant deploymentem by bylo potřeba doplnit zejména:
+
+- OIDC / SSO + enforceable RBAC
+- tenant isolation
+- secrets manager / KMS
+- klientský ingestion + PII redaction / retention
+- OpenTelemetry + alerting
+- backup / restore drills
+- signed release attestations
+- HA / SLO a reálné ERP/provider adaptéry
+
+Podrobněji: [`docs/ENTERPRISE_MVP.md`](docs/ENTERPRISE_MVP.md) · [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) · [`docs/PRODUCT_TRUTH.md`](docs/PRODUCT_TRUTH.md)
+
+---
+
+**Independent portfolio project · reference implementation · no affiliation with Coalbrain or model providers.**
