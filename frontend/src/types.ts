@@ -1,0 +1,15 @@
+export type GateStatus='PASS'|'REVIEW'|'BLOCK';
+export type Model={id:string;name:string;modality:string[];deployment:string;cost_per_task:number;latency_ms:number;capabilities:string[];configured:boolean;demo:boolean};
+export type Dataset={id:string;name:string;version:string;use_case:string;cases:number;source_type:string;tags:string[]};
+export type Policy={id:string;name:string;critical_accuracy_min:number;schema_compliance_min:number;fabricated_rate_max:number;security_failures_max:number;p95_latency_ms_max:number;cost_regression_pct_max:number;unsafe_auto_action_max:number};
+export type Metrics={task_quality:number;critical_accuracy:number;schema_compliance:number;fabricated_rate:number;p50_latency_ms:number;p95_latency_ms:number;cost_per_task:number;automation_rate:number;abstention_quality:number;unsafe_auto_action:number;security_failures:number};
+export type Reason={metric:string;expected:string;actual:any;severity:'hard'|'soft'};
+export type Candidate={model_id:string;metrics:Metrics;business_score:number;status:GateStatus;reasons:Reason[];cost_delta_pct:number;evidence_count:number};
+export type Run={id:string;created_at:string;seed:number;use_case:string;dataset_id:string;dataset_version:string;policy_id:string;policy_version:string;prompt_version:string;build_version:string;baseline_model_id:string;baseline:Candidate;candidates:Candidate[];demo:boolean};
+export type Provider={id:string;name:string;configured:boolean;enabled:boolean;mode:string;reason:string};
+export type Audit={id:string;created_at:string;event_type:string;resource_type:string;resource_id:string;payload:Record<string,any>};
+export type EnterpriseSummary={workspaces:number;benchmark_runs:number;candidate_evidence:number;blocked_candidates:number;promoted_releases:number;regression_cases:number;audit_events:number;avg_critical_accuracy:number;control_mode:string;product_version:string};
+export type EnterpriseWorkspace={id:string;name:string;use_case:string;environment:string;deployment:string;data_residency:string;criticality:string;owner:string;integration:string};
+export type ReleaseDecision={id:string;created_at:string;run_id:string;workspace_id:string;environment:string;incumbent_model_id:string;candidate_model_id:string;decision:'PROMOTE'|'HOLD'|'BLOCK'|'UNKNOWN';reasons:string[];quality_delta:number;cost_delta_pct:number;p95_latency_delta_ms:number;policy_id:string;requested_by:string};
+export type RadarRow={model_id:string;pass:number;review:number;block:number;runs:number;best_cost_delta_pct:number|null;state:'REJECTED'|'CANDIDATE'|'CURRENT'|'WATCH'};
+export type ComplianceControl={id:string;name:string;status:'ENFORCED'|'SCAFFOLDED'|'ROADMAP'};

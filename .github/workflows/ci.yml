@@ -1,0 +1,33 @@
+name: ai-evidence-gate-ci
+on: [push, pull_request]
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.13'}
+      - run: pip install -r backend/requirements.txt
+      - run: cd backend && pytest -q
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - run: cd frontend && npm install
+      - run: cd frontend && npm run build
+  compose-e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker compose up --build -d
+      - run: |
+          for i in {1..40}; do curl -fsS http://127.0.0.1:5173/ready && break || sleep 2; done
+          curl -fsS http://127.0.0.1:5173/ready
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - run: cd frontend && npm install && npx playwright install --with-deps chromium
+      - run: cd frontend && npm run e2e
+      - if: always()
+        run: docker compose logs --no-color

@@ -1,0 +1,24 @@
+# Runtime / dependencies
+.venv/
+__pycache__/
+.pytest_cache/
+node_modules/
+dist/
+playwright-report/
+test-results/
+*.pyc
+*.db
+*.log
+*.tsbuildinfo
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Local / backup artifacts
+.DS_Store
+.backup-*/
+frontend.backup-r0/
+ai-quality-lab/
+*.backup-r0
