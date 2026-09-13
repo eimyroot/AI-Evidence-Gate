@@ -30,6 +30,9 @@ test('výsledek vysvětlí další krok a schová technické detaily',async({pag
 test('jak to funguje používá lidský jazyk',async({page})=>{
  await page.goto('/jak-to-funguje');
  await expect(page.getByText('Jak to celé funguje')).toBeVisible();
+ await expect(page.getByText('Kontrolní vrstva mezi automatizací a dlouhodobým provozem')).toBeVisible();
+ await expect(page.getByRole('main').getByText('AI Evidence Gate',{exact:true})).toBeVisible();
+ await expect(page.getByText('Gate není jednorázová kontrola.')).toBeVisible();
  await expect(page.getByText('Obě varianty dostanou stejné testovací případy')).toBeVisible();
  await expect(page.getByText(/Levnější chyba je pořád chyba/)).toBeVisible();
 });

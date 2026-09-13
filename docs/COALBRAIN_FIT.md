@@ -7,6 +7,25 @@ Coalbrain publicly describes a portfolio spanning AI opportunity analysis, docum
 
 AI Evidence Gate provides that shared layer:
 
+## Lifecycle placement
+
+The strongest fit is not as a replacement for Coalbrain's consulting or delivery work, but as a control layer at the transition from implementation into long-term operation:
+
+```text
+AI analysis → team training / adoption → process automation → [ AI EVIDENCE GATE ] → operation & development
+                                                        ↑                          │
+                                                        └── each model/prompt/agent change ──┘
+```
+
+That means two concrete moments of value:
+
+- **Before first production release:** prove that the implemented workflow satisfies process-specific quality and safety gates.
+- **During operation and development:** replay the same evidence whenever a model, prompt, provider or agent step changes, so a cheaper/faster candidate cannot silently introduce a regression.
+
+This lifecycle mapping is based on the public four-step delivery framing shown by Coalbrain: opportunity analysis, team enablement, process automation, and ongoing operation/development. It is an independent interpretation, not a statement about Coalbrain's internal architecture.
+
+AI Evidence Gate provides that shared layer:
+
 - use-case-specific golden and regression datasets
 - quality, safety, latency and cost metrics
 - human escalation and unsafe-action measurement

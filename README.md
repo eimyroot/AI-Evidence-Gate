@@ -44,6 +44,20 @@ nová varianta ─────┘                                      ↓
 - regresní chyby, které se mají příště testovat znovu
 
 **`UNKNOWN ≠ PASS`** a hard-gate security failure nemůže zachránit levnější cena ani hezké průměrné skóre.
+## Kde AI Evidence Gate zapadá ve firemním AI lifecycle
+
+AI Evidence Gate není náhrada za AI analýzu, školení ani samotnou automatizaci. Je to kontrolní vrstva mezi vytvořeným AI workflow a jeho bezpečným dlouhodobým provozem.
+
+```text
+AI analýza → školení / adopce → automatizace → [ AI EVIDENCE GATE ] → provoz a rozvoj
+                                               ↑                         │
+                                               └──── každá další změna ──┘
+```
+
+Před prvním nasazením a potom při změně modelu, promptu, providera nebo agentního workflow se znovu přehrají stejné důkazní scénáře. Teprve výsledek `PASS / REVIEW / BLOCK` dává podklad pro release rozhodnutí.
+
+To je záměrně obecný lifecycle pattern. Repo zároveň obsahuje samostatné nezávislé mapování na veřejně popsané use-cases Coalbrainu v [`docs/COALBRAIN_FIT.md`](docs/COALBRAIN_FIT.md); nejde o tvrzení o jejich interní architektuře ani o afiliaci.
+
 ## Architektura
 
 ```text
@@ -80,7 +94,7 @@ Aktuální verze byla lokálně ověřena proti běžícímu Docker stacku:
 
 - frontend production build: **PASS**
 - API readiness: **PASS**
-- český základní user journey: **4/4 Playwright E2E PASS**
+- český základní user journey: **5/5 Playwright E2E PASS**
 - enterprise PROMOTE / BLOCK flow a persistence byly ověřeny v předchozím release gate
 - veřejné demo používá syntetická data a externí provider volání je ve výchozím stavu vypnuté
 
